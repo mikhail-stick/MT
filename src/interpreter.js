@@ -11,7 +11,7 @@ import {
     SymbolExpr
 } from "./expressions.js";
 import {Environment} from "./environment.js";
-import {SemanticError} from "./errors.js";
+import {RuntimeError, SemanticError} from "./errors.js";
 import fs from "fs";
 import path from "path";
 import {Tokenizer} from "./tokenizer.js";
@@ -193,6 +193,8 @@ export class Interpreter {
             return !arg;
         });
         this.env.define("display", (arg) => process.stdout.write(this.toLispTypes(arg)));
+        this.env.define("displayln", (arg) => console.log(this.toLispTypes(arg)));
+
         this.env.define("null?", (arg) => {
             return JSON.stringify(arg) === JSON.stringify([]);
         });
@@ -266,6 +268,8 @@ export class Interpreter {
         this.env.define('string<?', (str1, str2) => {
             return str1 < str2;
         })
+
+
     }
 
     makeCompare(compareFunc, a, b) {
@@ -302,12 +306,7 @@ export class Interpreter {
             });
         }
         if (Array.isArray(arg)) {
-            let str = '';
-            for (const val of arg) {
-                str += `${val}\n`;
-            }
-            return str
-            // return `(${arg.map(this.toLispTypes).join(' ')})`;
+            return `(${arg.map(this.toLispTypes.bind(this)).join(' ')})`;
         }
         if (typeof arg === 'undefined') {
             return 'unspecified'
@@ -371,14 +370,17 @@ export class Interpreter {
             return this.interpret(expr.expression, env);
         }
         if (expr instanceof ImportExpr) {
-            const file = fs.readFileSync(path.join(path.dirname(import.meta.url), expr.value.token.literal).split(':')[1]);
-            const tokenizer = new Tokenizer(file.toString());
-            const tokens = tokenizer.tokenize();
+            const file = fs.readFileSync(path.join(path.dirname(import.meta.url), expr.value.token.literal).split(':')[1]).toString();
+            if (path.extname(expr.value.token.literal) === '.scm') {
+                const tokenizer = new Tokenizer(file);
+                const tokens = tokenizer.tokenize();
 
-            const parser = new Parser(tokens);
-            const expressions = parser.parse();
+                const parser = new Parser(tokens);
+                const expressions = parser.parse();
 
-            return this.interpret(expressions, env);
+                return this.interpret(expressions, env);
+            }
+            throw RuntimeError();
         }
     }
 }

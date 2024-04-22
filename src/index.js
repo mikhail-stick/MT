@@ -41,7 +41,7 @@ const constructTree = function(expr, indent = '|- ') {
         for (const prop of expr) {
             if (prop instanceof DefineExpr) {
                 console.log(indent + "Define");
-                constructTreze(prop.variable, '  ' + indent);
+                constructTree(prop.variable, '  ' + indent);
                 constructTree(prop.value, '  ' + indent);
                 continue;
             }
@@ -124,7 +124,7 @@ const constructTree = function(expr, indent = '|- ') {
     }
 }
 
-const file = fs.readFileSync("./src/INPUT.txt", "utf-8");
+const file = fs.readFileSync("./src/INPUT.scm", "utf-8");
 run(file);
 console.log();
 
