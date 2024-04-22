@@ -125,4 +125,14 @@ export class ImportExpr extends Expr {
     }
 }
 
+export class ReturnExpr extends Expr {
+    /**
+     * @param {Token} value
+     */
+    constructor(value) {
+        super();
+        this.value = value;
+    }
+}
+
 export const NULL_VALUE = []

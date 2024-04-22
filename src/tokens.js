@@ -32,5 +32,6 @@ export const Keywords = {
     Quote: "quote",
     Set: 'set!',
     Begin: 'begin',
-    Import: 'import'
+    Import: 'import',
+    Return: 'return'
 }

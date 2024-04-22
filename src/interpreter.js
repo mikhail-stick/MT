@@ -6,7 +6,7 @@ import {
     LambdaExpr,
     ListExpr,
     LiteralExpr,
-    QuoteExpr,
+    QuoteExpr, ReturnExpr,
     SetExpr,
     SymbolExpr
 } from "./expressions.js";
@@ -382,6 +382,9 @@ export class Interpreter {
             }
             throw RuntimeError();
         }
+        if (expr instanceof ReturnExpr) {
+            return this.interpretExpr(expr.value, env);
+        }
     }
 }
 
@@ -402,6 +405,9 @@ class Procedure {
         let result;
         for (const expr of this.body) {
             result = interpreter.interpretExpr(expr, env);
+            if (expr instanceof ReturnExpr) {
+                break;
+            }
         }
         return result;
     }

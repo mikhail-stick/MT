@@ -8,7 +8,7 @@ import {
     NULL_VALUE,
     SymbolExpr,
     ListExpr,
-    QuoteExpr, SetExpr, BeginExpr, ImportExpr
+    QuoteExpr, SetExpr, BeginExpr, ImportExpr, ReturnExpr
 } from "./expressions.js";
 import {SyntaxError} from "./errors.js";
 
@@ -57,17 +57,28 @@ export class Parser {
                 return this.begin();
             }
             if (token.lexeme === Keywords.Import) {
-                // console.log(this.peek());
-                this.advance();
-                // console.log(this.peek());
-                const value = this.expression();
-                // console.log(this.peek());
-                this.advance();
-                return new ImportExpr(value);
+                return this.import();
+            }
+            if (token.lexeme === Keywords.Return) {
+                return this.return();
             }
             return this.call();
         }
         return this.atom()
+    }
+
+    return() {
+        this.advance();
+        const value = this.expression();
+        this.advance();
+        return new ReturnExpr(value);
+    }
+
+    import() {
+        this.advance();
+        const value = this.expression();
+        this.advance();
+        return new ImportExpr(value);
     }
 
     begin() {
