@@ -117,7 +117,7 @@ export class SetExpr extends Expr {
 
 export class ImportExpr extends Expr {
     /**
-     * @param {Token} value
+     * @param {Expr} value
      */
     constructor(value) {
         super();
@@ -127,7 +127,7 @@ export class ImportExpr extends Expr {
 
 export class ReturnExpr extends Expr {
     /**
-     * @param {Token} value
+     * @param {Expr} value
      */
     constructor(value) {
         super();

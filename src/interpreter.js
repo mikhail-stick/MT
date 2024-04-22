@@ -192,7 +192,10 @@ export class Interpreter {
             }
             return !arg;
         });
-        this.env.define("display", (arg) => process.stdout.write(this.toLispTypes(arg)));
+        this.env.define("display", (arg) => {
+            process.stdout.write(this.toLispTypes(arg));
+            return undefined;
+        });
         this.env.define("displayln", (arg) => console.log(this.toLispTypes(arg)));
 
         this.env.define("null?", (arg) => {
@@ -336,6 +339,7 @@ export class Interpreter {
             if (called.length !== args.length && !called.spread) {
                 throw new SemanticError(`Wrong number of arguments in ${expr.called.token.literal} (it takes ${called.length} arguments, but ${args.length} are received)`);
             }
+
             return called(...args);
         }
         if (expr instanceof DefineExpr) {
