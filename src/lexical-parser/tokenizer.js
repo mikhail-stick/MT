@@ -34,7 +34,7 @@ export class Tokenizer {
                     break;
                 }
                 case ';':
-                    while(this.peek() !== '\n' && !this.isEnd()){
+                    while (this.peek() !== '\n' && !this.isEnd()) {
                         this.advance();
                     }
                     this.advance();
@@ -48,6 +48,10 @@ export class Tokenizer {
                 case "\n": {
                     this.line += 1;
                     this.line_position = this.start + 1;
+                    break;
+                }
+                case "'": {
+                    this.addToken(TokenType.Quote, null);
                     break;
                 }
                 case '"': {
@@ -76,6 +80,10 @@ export class Tokenizer {
                             break;
                         }
                         this.addToken(TokenType.Boolean, false);
+                        break;
+                    }
+                    if (this.peek() === "(") {
+                        this.addToken(TokenType.Quote, null);
                         break;
                     }
                     while (!([" ", "(", ")", "\n", undefined].includes(this.peek()))) {

@@ -253,6 +253,12 @@ export class Interpreter {
             list[index] = value;
             return list;
         });
+        this.env.define('make-list', function (size, value) {
+            if (typeof value !== "object") {
+                return new Array(size).fill(value);
+            }
+            return Array.from({ length: size }, () => value.slice());
+        })
         this.env.define('number->string', function (arg) {
             if (typeof arg !== 'number') {
                 throw new SemanticError(`In procedure 'number->string' Wrong type "${arg}"`);
@@ -318,6 +324,9 @@ export class Interpreter {
         if (typeof arg === 'function') {
             return `procedure ${this.env.getKeyByValue(arg)}`
         }
+        if (arg instanceof Procedure) {
+            return `procedure ${this.env.getKeyByValue(arg)}`;
+        }
         return arg.toString();
     }
 
@@ -378,23 +387,15 @@ export class Interpreter {
             const filePath = path.join(path.dirname(path.dirname(import.meta.url)), expr.value.token.literal).split(':')[1];
 
             if (path.extname(filePath) === '.scm') {
-                const isFileExist = fs.existsSync(filePath);
-
-                if (isFileExist) {
-                    return this.importFile(filePath, env);
-                }
+                return this.importIfExistAndNotImported(filePath, env);
             }
 
             if (path.extname(filePath) === '') {
                 const filePathWithExt = path.join(filePath + '.scm');
-                const isFileExist = fs.existsSync(filePathWithExt);
-
-                if (isFileExist) {
-                    return this.importFile(filePathWithExt, env);
-                }
+                return this.importIfExistAndNotImported(filePathWithExt, env);
             }
 
-            throw new RuntimeError();
+            throw new RuntimeError(`Cannot import file: ${filePath}`);
         }
         if (expr instanceof ReturnExpr) {
             return this.interpretExpr(expr.value, env);
@@ -409,13 +410,27 @@ export class Interpreter {
         })
     }
 
-    importFile(filePath, env) {
+    importIfExistAndNotImported(filePath, env) {
+        const isFileExist = fs.existsSync(filePath);
+
+        if (isFileExist) {
+            return this.importIfNotImported(filePath, env);
+        } else {
+            throw new RuntimeError(`Cannot import file: ${filePath}`);
+        }
+    }
+
+    importIfNotImported(filePath, env) {
         if (this.isImported(filePath)) {
             return;
         }
 
         this.importedFiles.push(path.resolve(filePath));
 
+        this.importFile(filePath, env)
+    }
+
+    importFile(filePath, env) {
         const file = fs.readFileSync(filePath).toString();
 
         const tokenizer = new Tokenizer(file);

@@ -6,6 +6,7 @@ export const TokenType = {
     Boolean: "Boolean",
     String: "String",
     Eof: "Eof",
+    Quote: 'Quote'
 }
 
 export class Token {

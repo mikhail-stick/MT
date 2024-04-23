@@ -225,6 +225,8 @@ export class Parser {
         switch (true) {
             case this.match(TokenType.Symbol):
                 return new SymbolExpr(this.previous());
+            case this.match(TokenType.Quote):
+                return this.quoteValue();
             case this.match(TokenType.Boolean):
             case this.match(TokenType.String):
             case this.match(TokenType.Number):
