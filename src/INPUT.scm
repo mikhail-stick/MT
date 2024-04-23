@@ -1,7 +1,4 @@
-(define m 3) ; Количество строк
-(define n 4) ; Количество столбцов
-
-(define matrix
-  (make-list m (make-list n 0)))
-
-(display matrix)
+(import "INPUT1")
+(define first_matrix '((1 2 3) (4 5 6) (7 8 9)))
+(define second_matrix '((1 2 3) (4 5 6) (7 8 9)))
+(displayln (multiply_matrix first_matrix second_matrix))

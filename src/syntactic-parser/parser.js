@@ -159,11 +159,15 @@ export class Parser {
         if (this.match(TokenType.LeftBracket)) {
             const args = [];
 
-            while (!this.match(TokenType.RightBracket)) {
+            while (this.peek().tokenType !== TokenType.RightBracket) {
+                if (this.peek().tokenType === TokenType.LeftBracket) {
+                    args.push(this.quoteValue());
+                    continue;
+                }
                 const params = this.expression();
                 args.push(params);
             }
-
+            this.advance();
             quoted = new ListExpr(args);
         } else {
             quoted = this.expression();

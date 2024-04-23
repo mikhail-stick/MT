@@ -3,10 +3,14 @@
                       )
   )
 
-(define multiply_matrix (lambda (f_row f_col f_m s_row s_col s_m)
+(define multiply_matrix (lambda (f_m s_m)
                           (define i 0)
                           (define j 0)
                           (define k 0)
+                          (define f_row (length f_m))
+                          (define f_col (length (vector-ref f_m 0)))
+                          (define s_row (length s_m))
+                          (define s_col (length (vector-ref s_m 0)))
                           (
                             if (not (= s_row f_col))
                             "not possible"
@@ -50,12 +54,7 @@
   )
 
 
-(define first_matrix (quote ((quote (1 2 3))
-                              (quote (4 5 6))
-                              (quote (7 8 9)))))
-(define second_matrix (quote ((quote (1 2 3))
-                               (quote (4 5 6))
-                               (quote (7 8 9)))))
+;(define first_matrix '((1 2 3) (4 5 6) (7 8 9)))
+;(define second_matrix '((1 2 3) (4 5 6) (7 8 9)))
 
-
-(displayln (multiply_matrix 3 3 first_matrix 3 3 second_matrix))
+;(displayln (multiply_matrix first_matrix second_matrix))
