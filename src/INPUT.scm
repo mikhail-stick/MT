@@ -1,1 +1,5 @@
 (import "INPUT2")
+(displayln x)
+(set! x 10)
+(import "INPUT2")
+(displayln x)

@@ -16,15 +16,15 @@ import fs from "fs";
 import path from "path";
 import {Tokenizer} from "../lexical-parser/tokenizer.js";
 import {Parser} from "../syntactic-parser/parser.js";
-import { fileURLToPath } from 'url';
 
 export class Interpreter {
     /**
      * @param {Expr[]} expressions
      * */
     constructor(expressions) {
-        this.expressions = expressions
-        this.env = new Environment()
+        this.expressions = expressions;
+        this.env = new Environment();
+        this.importedFiles = [];
 
         this.env.define("set!", function (key, value) {
             this.env.set(key, value);
@@ -379,15 +379,18 @@ export class Interpreter {
 
             if (path.extname(filePath) === '.scm') {
                 const isFileExist = fs.existsSync(filePath);
+
                 if (isFileExist) {
                     return this.importFile(filePath, env);
                 }
             }
 
             if (path.extname(filePath) === '') {
-                const isFileExist = fs.existsSync(path.join(filePath + '.scm'));
+                const filePathWithExt = path.join(filePath + '.scm');
+                const isFileExist = fs.existsSync(filePathWithExt);
+
                 if (isFileExist) {
-                    return this.importFile(filePath + '.scm', env);
+                    return this.importFile(filePathWithExt, env);
                 }
             }
 
@@ -398,7 +401,21 @@ export class Interpreter {
         }
     }
 
+    isImported(filePath) {
+        return this.importedFiles.some((root) => {
+            if (root === path.resolve(filePath)) {
+                return true;
+            }
+        })
+    }
+
     importFile(filePath, env) {
+        if (this.isImported(filePath)) {
+            return;
+        }
+
+        this.importedFiles.push(path.resolve(filePath));
+
         const file = fs.readFileSync(filePath).toString();
 
         const tokenizer = new Tokenizer(file);
