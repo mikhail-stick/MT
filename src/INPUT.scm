@@ -1,6 +1,2 @@
-(define a (lambda (n)
-            (display 2)
-            )
-  )
+(import "INPUT2")
 
-(display (a 1))

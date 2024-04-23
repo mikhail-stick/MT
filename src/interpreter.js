@@ -374,21 +374,39 @@ export class Interpreter {
             return this.interpret(expr.expression, env);
         }
         if (expr instanceof ImportExpr) {
-            const file = fs.readFileSync(path.join(path.dirname(import.meta.url), expr.value.token.literal).split(':')[1]).toString();
-            if (path.extname(expr.value.token.literal) === '.scm') {
-                const tokenizer = new Tokenizer(file);
-                const tokens = tokenizer.tokenize();
+            const filePath = path.join(path.dirname(import.meta.url), expr.value.token.literal).split(':')[1];
 
-                const parser = new Parser(tokens);
-                const expressions = parser.parse();
-
-                return this.interpret(expressions, env);
+            if (path.extname(filePath) === '.scm') {
+                const isFileExist = fs.existsSync(filePath);
+                if (isFileExist) {
+                    return this.importFile(filePath, env);
+                }
             }
-            throw RuntimeError();
+
+            if (path.extname(filePath) === '') {
+                const isFileExist = fs.existsSync(path.join(filePath + '.scm'));
+                if (isFileExist) {
+                    return this.importFile(filePath + '.scm', env);
+                }
+            }
+
+            throw new RuntimeError();
         }
         if (expr instanceof ReturnExpr) {
             return this.interpretExpr(expr.value, env);
         }
+    }
+
+    importFile(filePath, env) {
+        const file = fs.readFileSync(filePath).toString();
+
+        const tokenizer = new Tokenizer(file);
+        const tokens = tokenizer.tokenize();
+
+        const parser = new Parser(tokens);
+        const expressions = parser.parse();
+
+        return this.interpret(expressions, env);
     }
 }
 
