@@ -53,7 +53,7 @@
 
 ;(vector-set! (vector-ref first_matrix 0) 0 35)
 ;(display first_matrix)
-(displayln (multiply_matrix 3 3 first_matrix 3 3 second_matrix))
+;(displayln (multiply_matrix 3 3 first_matrix 3 3 second_matrix))
 
 ;(display x)
 

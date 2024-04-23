@@ -1,5 +1,5 @@
 import {TokenType, Token} from "./tokens.js";
-import {LexicalError} from "./errors.js";
+import {LexicalError} from "../errors.js";
 
 export class Tokenizer {
 

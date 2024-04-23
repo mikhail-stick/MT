@@ -1,4 +1,4 @@
-import {SemanticError} from "./errors.js";
+import {SemanticError} from "../errors.js";
 
 export class Environment {
 

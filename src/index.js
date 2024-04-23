@@ -1,9 +1,9 @@
-import {Tokenizer} from "./tokenizer.js";
-import {Parser} from "./parser.js";
-import {Interpreter} from "./interpreter.js";
+import {Tokenizer} from "./lexical-parser/tokenizer.js";
+import {Parser} from "./syntactic-parser/parser.js";
+import {Interpreter} from "./semantic-parser/interpreter.js";
 import fs from 'fs';
-import {Token, TokenType} from "./tokens.js";
-import {CallExpr, DefineExpr, IfExpr, LambdaExpr, ListExpr, LiteralExpr, QuoteExpr, SymbolExpr} from "./expressions.js";
+import {Token, TokenType} from "./lexical-parser/tokens.js";
+import {CallExpr, DefineExpr, IfExpr, LambdaExpr, ListExpr, LiteralExpr, QuoteExpr, SymbolExpr} from "./syntactic-parser/expressions.js";
 
 export const run = (code) => {
     const tokenizer = new Tokenizer(code);

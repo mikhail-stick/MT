@@ -9,13 +9,14 @@ import {
     QuoteExpr, ReturnExpr,
     SetExpr,
     SymbolExpr
-} from "./expressions.js";
+} from "../syntactic-parser/expressions.js";
 import {Environment} from "./environment.js";
-import {RuntimeError, SemanticError} from "./errors.js";
+import {RuntimeError, SemanticError} from "../errors.js";
 import fs from "fs";
 import path from "path";
-import {Tokenizer} from "./tokenizer.js";
-import {Parser} from "./parser.js";
+import {Tokenizer} from "../lexical-parser/tokenizer.js";
+import {Parser} from "../syntactic-parser/parser.js";
+import { fileURLToPath } from 'url';
 
 export class Interpreter {
     /**
@@ -374,7 +375,7 @@ export class Interpreter {
             return this.interpret(expr.expression, env);
         }
         if (expr instanceof ImportExpr) {
-            const filePath = path.join(path.dirname(import.meta.url), expr.value.token.literal).split(':')[1];
+            const filePath = path.join(path.dirname(path.dirname(import.meta.url)), expr.value.token.literal).split(':')[1];
 
             if (path.extname(filePath) === '.scm') {
                 const isFileExist = fs.existsSync(filePath);

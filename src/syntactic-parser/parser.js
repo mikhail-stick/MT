@@ -1,4 +1,4 @@
-import {Keywords, Token, TokenType} from "./tokens.js";
+import {Keywords, Token, TokenType} from "../lexical-parser/tokens.js";
 import {
     CallExpr,
     DefineExpr,
@@ -10,7 +10,7 @@ import {
     ListExpr,
     QuoteExpr, SetExpr, BeginExpr, ImportExpr, ReturnExpr
 } from "./expressions.js";
-import {SyntaxError} from "./errors.js";
+import {SyntaxError} from "../errors.js";
 
 export class Parser {
 
