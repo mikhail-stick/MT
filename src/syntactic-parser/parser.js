@@ -201,9 +201,12 @@ export class Parser {
     lambda() {
         this.advance();
 
+        let isSpread = false;
+
         const args = [];
         if (this.match(TokenType.Symbol)) {
             args.push(this.previous());
+            isSpread = true;
         } else {
             if (!this.match(TokenType.LeftBracket)) {
                 throw new SyntaxError();
@@ -222,7 +225,7 @@ export class Parser {
         while (!this.match(TokenType.RightBracket)) {
             body.push(this.expression());
         }
-        return new LambdaExpr(args, body);
+        return new LambdaExpr(args, body, isSpread);
     }
 
     atom() {

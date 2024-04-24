@@ -41,7 +41,7 @@ export class Interpreter {
                 return x + y;
             }, 0);
         });
-        this.env.get('+').spread = true;
+        this.env.get('+').isSpread = true;
 
         this.env.define("-", function (...args) {
             args.map((value) => {
@@ -56,7 +56,7 @@ export class Interpreter {
             }
             return res;
         });
-        this.env.get('-').spread = true;
+        this.env.get('-').isSpread = true;
 
         this.env.define("/", function (...args) {
             args.map((value) => {
@@ -71,7 +71,7 @@ export class Interpreter {
             }
             return res;
         });
-        this.env.get('/').spread = true;
+        this.env.get('/').isSpread = true;
 
         this.env.define("*", function (...args) {
             args.map((value) => {
@@ -86,7 +86,7 @@ export class Interpreter {
             }
             return res;
         });
-        this.env.get('*').spread = true;
+        this.env.get('*').isSpread = true;
 
         this.env.define("=", function (a, b) {
             if (typeof a !== "number") {
@@ -340,13 +340,13 @@ export class Interpreter {
             const args = expr.args.map((arg) => this.interpretExpr(arg, env));
 
             if (called instanceof Procedure) {
-                if (called.args.length !== args.length) {
+                if (called.args.length !== args.length && !called.isSpread) {
                     throw new SemanticError(`Wrong number of arguments in ${expr.called.token.literal} (it takes ${called.args.length} arguments, but ${args.length} are received)`);
                 }
                 return called.call(this, args);
             }
 
-            if (called.length !== args.length && !called.spread) {
+            if (called.length !== args.length && !called.isSpread) {
                 throw new SemanticError(`Wrong number of arguments in ${expr.called.token.literal} (it takes ${called.length} arguments, but ${args.length} are received)`);
             }
 
@@ -356,7 +356,7 @@ export class Interpreter {
             return env.define(expr.variable.lexeme, this.interpretExpr(expr.value, env));
         }
         if (expr instanceof LambdaExpr) {
-            return new Procedure(expr.args, expr.body, env);
+            return new Procedure(expr.args, expr.body, expr.isSpread, env);
         }
         if (expr instanceof LiteralExpr) {
             return expr.token.literal;
@@ -447,15 +447,20 @@ class Procedure {
     /**
      * @param{Token[]} args
      * @param{Expr[]} body
+     * @param{Boolean} isSpread
      * @param{Environment} env
      * */
-    constructor(args, body, env) {
+    constructor(args, body, isSpread, env) {
         this.args = args;
         this.body = body;
+        this.isSpread = isSpread;
         this.env = env;
     }
 
     call(interpreter, args) {
+        if (this.isSpread) {
+            args = [args];
+        }
         const env = new Environment(this.env, this.args, args);
         let result;
         for (const expr of this.body) {

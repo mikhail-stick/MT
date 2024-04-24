@@ -15,16 +15,16 @@ export class Environment {
                 throw new Error();
             }
 
-            if (this.isArrays(keys, values)) {
-                if (keys.length !== values.length) {
-                    throw new Error();
-                }
-                for (let i = 0; i <= keys.length - 1; i++) {
-                    this.declarations[keys[i].lexeme] = values[i];
-                }
-            } else {
-                this.declarations[keys.lexeme] = values;
+            // if (this.isArrays(keys, values)) {
+            if (keys.length !== values.length) {
+                throw new Error();
             }
+            for (let i = 0; i <= keys.length - 1; i++) {
+                this.declarations[keys[i].lexeme] = values[i];
+            }
+            // } else {
+            //     this.declarations[keys.lexeme] = values;
+            // }
         }
 
         this.closestEnv = closestEnv;

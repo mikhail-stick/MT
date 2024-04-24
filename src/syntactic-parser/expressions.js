@@ -49,11 +49,13 @@ export class LambdaExpr extends Expr {
     /**
      * @param {Token[]} args
      * @param {Expr[]} body
+     * @param {Boolean} isSpread
      * */
-    constructor(args, body) {
+    constructor(args, body, isSpread=false) {
         super();
         this.args = args;
         this.body = body;
+        this.isSpread = isSpread;
     }
 }
 
