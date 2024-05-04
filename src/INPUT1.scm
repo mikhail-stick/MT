@@ -46,15 +46,14 @@
                                                               )
                                                             )
                                 )
-                              (define result_matrix (make_matrix f_row s_col))
-                              (return (multiply_matrix_rec f_row f_col f_m s_row s_col s_m result_matrix))
+                              (return (multiply_matrix_rec f_row f_col f_m s_row s_col s_m (make_matrix f_row s_col)))
                               )
                             )
                           )
   )
 
 
-;(define first_matrix '((1 2 3) (4 5 6) (7 8 9)))
-;(define second_matrix '((1 2 3) (4 5 6) (7 8 9)))
+(define first_matrix #(#(1 2 3) #(4 5 6) #(7 8 9)))
+(define second_matrix #(#(1 2 3) #(4 5 6) #(7 8 9)))
 
-;(displayln (multiply_matrix first_matrix second_matrix))
+(displayln (multiply_matrix first_matrix second_matrix))

@@ -1,7 +1,7 @@
 import {
     BeginExpr,
     CallExpr,
-    DefineExpr,
+    DefineExpr, FuncExpr,
     IfExpr, ImportExpr,
     LambdaExpr,
     ListExpr,
@@ -293,12 +293,9 @@ export class Interpreter {
     interpret(expressions, env) {
         let result;
         expressions = expressions || this.expressions;
-        // console.log(expressions)
         for (const expr of expressions) {
-            // console.log(expr)
             result = this.interpretExpr(expr, env || this.env);
         }
-        // console.log(this.env);
         return this.toLispTypes(result);
     }
 

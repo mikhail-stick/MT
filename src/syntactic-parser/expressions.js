@@ -51,13 +51,15 @@ export class LambdaExpr extends Expr {
      * @param {Expr[]} body
      * @param {Boolean} isSpread
      * */
-    constructor(args, body, isSpread=false) {
+    constructor(args, body, isSpread = false) {
         super();
         this.args = args;
         this.body = body;
         this.isSpread = isSpread;
     }
 }
+
+export class FuncExpr extends LambdaExpr {}
 
 export class IfExpr extends Expr {
     /**

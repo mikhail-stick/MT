@@ -8,7 +8,7 @@ import {
     NULL_VALUE,
     SymbolExpr,
     ListExpr,
-    QuoteExpr, SetExpr, BeginExpr, ImportExpr, ReturnExpr
+    QuoteExpr, SetExpr, BeginExpr, ImportExpr, ReturnExpr, FuncExpr
 } from "./expressions.js";
 import {SyntaxError} from "../errors.js";
 
@@ -84,7 +84,7 @@ export class Parser {
     begin() {
         this.advance();
         let expr = [];
-        while (!this.match(TokenType.RightBracket)){
+        while (!this.match(TokenType.RightBracket)) {
             expr.push(this.expression());
         }
         return new BeginExpr(expr);
@@ -125,15 +125,13 @@ export class Parser {
         let name;
         if (this.peek().tokenType === TokenType.Symbol) {
             name = this.advance();
-        }
-        else {
+        } else {
             throw new SyntaxError(`Unexpected token`);
         }
         const value = this.expression();
         if (this.peek().tokenType === TokenType.RightBracket) {
             this.advance();
-        }
-        else {
+        } else {
             throw new SyntaxError(`Unexpected token`);
         }
         return new SetExpr(name, value);
@@ -178,13 +176,18 @@ export class Parser {
 
     define() {
         this.advance();
-        const variable = this.advance();
+        let variable = this.advance();
+        let expr;
+
+        if (variable.tokenType === TokenType.LeftBracket) {
+            variable = this.advance();
+            expr = this.func();
+            return new DefineExpr(variable, expr)
+        }
 
         if (variable.tokenType !== TokenType.Symbol) {
             throw new SyntaxError(`Unexpected name [${variable.line}:${variable.position}] ${variable.lexeme}`)
         }
-
-        let expr;
 
         try {
             expr = this.expression();
@@ -197,6 +200,32 @@ export class Parser {
         }
         return new DefineExpr(variable, expr);
     }
+
+    getFuncArguments() {
+        const args = [];
+        while (!this.match(TokenType.RightBracket)) {
+            if (!this.match(TokenType.Symbol)) {
+                throw new SyntaxError(`Invalid list of argument [${this.peek().line}:${this.peek().position}]: ${this.peek().lexeme}`);
+            }
+            if (args.find(arg => arg.lexeme === this.previous().lexeme)) {
+                throw new SyntaxError(`Duplicate identifier in argument list [${this.previous().line}:${this.previous().position}]: ${this.previous().lexeme}`);
+            }
+            args.push(this.previous());
+        }
+        return args
+    }
+
+    func() {
+        const args = this.getFuncArguments();
+        const body = [];
+
+        while (!this.match(TokenType.RightBracket)) {
+            body.push(this.expression());
+        }
+
+        return new FuncExpr(args, body);
+    }
+
 
     lambda() {
         this.advance();
@@ -211,15 +240,7 @@ export class Parser {
             if (!this.match(TokenType.LeftBracket)) {
                 throw new SyntaxError();
             }
-            while (!this.match(TokenType.RightBracket)) {
-                if (!this.match(TokenType.Symbol)) {
-                    throw new SyntaxError(`Invalid list of argument [${this.peek().line}:${this.peek().position}]: ${this.peek().lexeme}`);
-                }
-                if (args.find(arg => arg.lexeme === this.previous().lexeme)) {
-                    throw new SyntaxError(`Duplicate identifier in argument list [${this.previous().line}:${this.previous().position}]: ${this.previous().lexeme}`);
-                }
-                args.push(this.previous());
-            }
+            args.push(...this.getFuncArguments());
         }
         const body = [];
         while (!this.match(TokenType.RightBracket)) {
